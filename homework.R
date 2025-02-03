@@ -17,6 +17,16 @@ ds <- read_csv("data_raw/rolling_stone_500.csv")
 
 #ANSWER
 
+# check the type of all columns in ds
+glimpse(ds)
+
+# year is a character; convert it to numeric within ds
+# note that some values cannot be converted; have to remove incompatible characters
+ds <- ds %>% 
+  mutate(Year = as.numeric(gsub("\"", "", Year)))
+
+# check the type of year
+typeof(ds$Year)
 
 ### Question 2 ---------- 
 
@@ -24,6 +34,8 @@ ds <- read_csv("data_raw/rolling_stone_500.csv")
 # change ds so that all of the variables are lowercase
 
 #ANSWER
+
+ds <- ds %>% rename_with(tolower)
 
 ### Question 3 ----------
 
@@ -33,11 +45,16 @@ ds <- read_csv("data_raw/rolling_stone_500.csv")
 
 #ANSWER
 
+ds <- ds %>% mutate(decade = floor(year/10)*10)
+
+
 ### Question 4 ----------
 
 # Sort the dataset by rank so that 1 is at the top
 
 #ANSWER
+
+ds <- ds %>% arrange(rank)
 
 ### Question 5 ----------
 
@@ -45,6 +62,10 @@ ds <- read_csv("data_raw/rolling_stone_500.csv")
 # That just has the artists and songs for the top 10 songs
 
 #ANSWER
+
+top10 <- ds %>% 
+  filter(rank <= 10) %>% 
+  select(artist, song)
 
 
 ### Question 6 ----------
@@ -54,6 +75,11 @@ ds <- read_csv("data_raw/rolling_stone_500.csv")
 
 #ANSWER
 
+ds_sum <- ds %>% 
+  summarize(earliest_release = min(year),
+            most_recent_release = max(year),
+            average_release_year = round(mean(year)))
+
 
 ### Question 7 ----------
 
@@ -62,6 +88,9 @@ ds <- read_csv("data_raw/rolling_stone_500.csv")
 # Use one filter command only, and sort the responses by year
 
 #ANSWER
+
+# keep year, rank, and decade in the tibble
+ds %>% arrange(year) %>% filter(year %in% ds_sum)
 
 
 ### Question 8 ---------- 
